@@ -29,7 +29,7 @@ TEST_F(run_scenarios_rule, rule_1)
     * a step 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   EXPECT_FALSE(p.error());
   EXPECT_EQ(p.head().feature().scenarios().size(), 1);
@@ -47,7 +47,7 @@ TEST_F(run_scenarios_rule, rule_2)
     * a step 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   EXPECT_FALSE(p.error());
   ASSERT_EQ(p.head().feature().scenarios().size(), 2);
@@ -70,7 +70,7 @@ TEST_F(run_scenarios_rule, rule_error_w_tags_1)
     * a step 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   EXPECT_TRUE(p.error());
 }
@@ -88,7 +88,7 @@ TEST_F(run_scenarios_rule, rule_error_w_tags_2)
     * a step 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   EXPECT_TRUE(p.error());
 }
@@ -106,7 +106,7 @@ TEST_F(run_scenarios_rule, rule_example_w_tags)
     * a step 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   EXPECT_FALSE(p.error());
   ASSERT_EQ(p.head().feature().scenarios().size(), 2);
@@ -133,7 +133,7 @@ TEST_F(run_scenarios_rule, rule_w_description)
     * a step 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   EXPECT_FALSE(p.error());
   ASSERT_EQ(p.head().feature().scenarios().size(), 2);
@@ -167,7 +167,7 @@ TEST_F(run_scenarios_rule, rule_with_scenario_outline)
     | 23 | 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   EXPECT_FALSE(p.error());
   ASSERT_EQ(p.head().feature().scenarios().size(), 2);
@@ -209,7 +209,7 @@ TEST_F(run_scenarios_rule, multiple_rules)
     Given a step 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   EXPECT_FALSE(p.error());
   ASSERT_EQ(p.head().feature().scenarios().size(), 4);

@@ -70,7 +70,7 @@ TEST_F(run_scenario_special_chars, outline_w_special_chars_1)
           | <>        | <>            | <>            | <>                 | 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   ASSERT_FALSE(p.error());
 
@@ -94,7 +94,7 @@ TEST_F(run_scenario_special_chars, outline_w_special_chars_2)
           | a_word    | some < random > string | a_word        | some < random > string | 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   ASSERT_FALSE(p.error());
 
@@ -119,7 +119,7 @@ TEST_F(run_scenario_special_chars, outline_w_special_chars_3)
           | !@..#;;$::%,,''^&*(>><<)_+[]}{}<<??>> | !@..#;;$::%,,''^&*(>><<)_+[]}{}<<??>> | !@..#;;$::%,,''^&*(>><<)_+[]}{}<<??>> | !@..#;;$::%,,''^&*(>><<)_+[]}{}<<??>> | 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   ASSERT_FALSE(p.error());
 
@@ -141,7 +141,7 @@ TEST_F(run_scenario_special_chars, outline_w_special_chars_4)
           | <expected-word>  | <expected anonymous>  | <expected-word>        | <expected anonymous> | 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   ASSERT_FALSE(p.error());
 
@@ -159,7 +159,7 @@ TEST_F(run_scenario_special_chars, strings_w_special_chars_1)
         Then They will match "word" and "a string with < and >"
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   ASSERT_FALSE(p.error());
 
@@ -177,7 +177,7 @@ TEST_F(run_scenario_special_chars, strings_w_special_chars_2)
         Then They will match "<word>" and "<a string with < and >>"
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   ASSERT_FALSE(p.error());
 

@@ -4,12 +4,12 @@
 #include "../src/ast.hpp"
 #include "../src/table.hpp"
 
-TEST(ast, init_obj) { cuke::parser p; }
+TEST(ast, init_obj) { cuke::internal::parser p; }
 
 TEST(ast, feature_w_parser)
 {
   const char* script = "Feature: First Feature";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   EXPECT_EQ(p.head().feature().keyword(), std::string("Feature"));
   EXPECT_EQ(p.head().feature().name(), std::string("First Feature"));
@@ -27,7 +27,7 @@ TEST(ast, feature_error)
 TEST(ast, feature_error_parser)
 {
   const char* script = "this is no feature";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   EXPECT_TRUE(p.error());
 }
@@ -46,7 +46,7 @@ TEST(ast, parser_scenario_and_scenario_outline)
     | var |
     | 1   |
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   ASSERT_FALSE(p.error());
   EXPECT_EQ(p.head().feature().scenarios().size(), 2);
@@ -60,7 +60,7 @@ TEST(ast, parser_tag_inheritance_scenario)
     Scenario: a scenario 
     Given a step 
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   ASSERT_FALSE(p.error());
   EXPECT_EQ(p.head().feature().scenarios().size(), 1);
@@ -84,7 +84,7 @@ TEST(ast, parser_tag_inheritance_scenario_outline1)
     | var |
     | 1   |
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   ASSERT_FALSE(p.error());
   EXPECT_EQ(p.head().feature().scenarios().size(), 1);
@@ -130,7 +130,7 @@ TEST(ast, parser_tag_inheritance_scenario_outline2)
     | var |
     | 1   |
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   ASSERT_FALSE(p.error());
   EXPECT_EQ(p.head().feature().scenarios().size(), 1);
@@ -205,7 +205,7 @@ TEST(ast, parser_scenario_outline_two_examples)
     | var |
     | 1   |
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   ASSERT_FALSE(p.error());
   EXPECT_EQ(p.head().feature().scenarios().size(), 2);
@@ -1069,7 +1069,7 @@ TEST(ast, full_feature)
      And another step 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   const cuke::ast::feature_node& feature = p.head().feature();
 
@@ -1098,7 +1098,7 @@ TEST_F(ast_steps_w_values, scenario)
     Scenario: a scenario
     Given a step with 123 and "hello world"
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   ASSERT_FALSE(p.error());
   ASSERT_EQ(p.head().feature().scenarios().size(), 1);
@@ -1122,7 +1122,7 @@ TEST_F(ast_steps_w_values, scenario_w_undefined_step)
     Given a step with 123 and "hello world"
     And an undefined step
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   ASSERT_FALSE(p.error());
   ASSERT_EQ(p.head().feature().scenarios().size(), 1);
@@ -1148,7 +1148,7 @@ TEST_F(ast_steps_w_values, scenario_outline)
     | 101     | "hello" |
     | 999     | "world" | 
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   ASSERT_FALSE(p.error());
   ASSERT_EQ(p.head().feature().scenarios().size(), 1);
@@ -1185,7 +1185,7 @@ TEST_F(ast_steps_w_values, scenario_outline_undefined_steps)
     | 101     | "hello" |
     | 999     | "world" | 
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   ASSERT_FALSE(p.error());
   ASSERT_EQ(p.head().feature().scenarios().size(), 1);
@@ -1224,7 +1224,7 @@ TEST_F(ast_steps_w_values,
     | 101     | "hello" |
     | 999     | "world" | 
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   ASSERT_FALSE(p.error());
   ASSERT_EQ(p.head().feature().scenarios().size(), 1);
@@ -1270,7 +1270,7 @@ TEST_F(ast_steps_w_values, scenario_outline_var_replacement_table)
     | 101     | "hello" |
     | 999     | "world" | 
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   ASSERT_FALSE(p.error());
   ASSERT_EQ(p.head().feature().scenarios().size(), 1);
@@ -1324,7 +1324,7 @@ TEST_F(ast_steps_w_values, scenario_outline_var_replacement_doc_string)
     | 101     | "hello" |
     | 999     | "world" | 
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   ASSERT_FALSE(p.error());
   ASSERT_EQ(p.head().feature().scenarios().size(), 1);

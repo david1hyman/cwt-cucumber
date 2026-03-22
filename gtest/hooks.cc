@@ -37,7 +37,7 @@ TEST_F(hooks_before, run_scenario)
     Given a step 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -79,7 +79,7 @@ TEST_F(hooks_after, run_scenario)
     Given a step 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -120,7 +120,7 @@ TEST_F(hooks_after_tagged, ignore_hook)
     Given a step 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -137,7 +137,7 @@ TEST_F(hooks_after_tagged, execute_hook)
     Given a step 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   cuke::test_runner runner;
@@ -180,7 +180,7 @@ TEST_F(hooks_before_all, run_scenario)
     Given a step 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   cuke::test_runner runner;
@@ -225,7 +225,7 @@ TEST_F(hooks_after_all, run_scenario)
     Given a step 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   cuke::test_runner runner;

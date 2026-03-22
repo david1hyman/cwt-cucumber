@@ -29,7 +29,7 @@ TEST_F(test_results_1, scenario_passed)
     Given a step 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -77,7 +77,7 @@ TEST_F(test_results_1, german_keys)
     Gegeben sei a step
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -104,7 +104,7 @@ TEST_F(test_results_1, scenario_fails_1)
     Given this fails 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -126,7 +126,7 @@ TEST_F(test_results_1, scenario_fails_2)
     And this fails 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -147,7 +147,7 @@ TEST_F(test_results_1, undefined_step_1)
     And an undefined step ... 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -168,7 +168,7 @@ TEST_F(test_results_1, undefined_step_2)
     Then this fails 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -190,7 +190,7 @@ TEST_F(test_results_1, rule_id_check)
     Given a step 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -234,7 +234,7 @@ TEST_F(test_results_2, scenario_outline)
     | 999 |
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -261,7 +261,7 @@ TEST_F(test_results_2, scenario_w_tags)
     
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -289,7 +289,7 @@ TEST_F(test_results_2, scenario_outline_w_tags)
     | 123 |
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -314,7 +314,7 @@ TEST_F(test_results_2, with_description)
     Given a step with 123  
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -342,7 +342,7 @@ TEST_F(test_results_2, step_w_doc_string)
     
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -362,7 +362,7 @@ TEST_F(test_results_2, step_w_table)
     | 1 | 123   |
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -386,7 +386,7 @@ TEST_F(test_results_2, germen_keywords)
     | 1 | 123   |
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -399,7 +399,7 @@ TEST_F(test_results_2, error_msg_undefined_step)
     Given This does not exist
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);

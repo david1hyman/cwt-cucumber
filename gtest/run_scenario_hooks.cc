@@ -51,7 +51,7 @@ TEST_F(run_scenario_hooks, run_scenario)
     Given a step 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -71,7 +71,7 @@ TEST_F(run_scenario_hooks, run_scenario_w_tags)
     Given a step 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -121,7 +121,7 @@ TEST_F(run_scenario_hook_skip, skip_taggeed_scenario)
     Given a step 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -141,7 +141,7 @@ TEST_F(run_scenario_hook_skip, run_tagged_scenario)
     Given a step
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -158,7 +158,7 @@ TEST_F(run_scenario_hook_skip, skip_taggeed_feature)
     Given a step 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -179,7 +179,7 @@ TEST_F(run_scenario_hook_skip, skip_taggeed_scenario_outline)
     | 1     |
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -207,7 +207,7 @@ TEST_F(run_scenario_hook_skip, run_taggeed_scenario_outline)
     | 1     |
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -228,7 +228,7 @@ TEST_F(run_scenario_hook_skip, skip_taggeed_example)
     | 1     |
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -252,7 +252,7 @@ TEST_F(run_scenario_hook_skip, run_taggeed_example)
     | 1     |
  )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -294,7 +294,7 @@ TEST_F(run_scenario_hook_fail_scenario, set_scenario_to_failed_1)
     Given a step 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -318,7 +318,7 @@ TEST_F(run_scenario_hook_fail_scenario, set_scenario_to_failed_2)
     Given a step 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -362,7 +362,7 @@ TEST_F(run_scenario_hook_fail_step, set_step_to_failed_1)
     Given a step
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -384,7 +384,7 @@ TEST_F(run_scenario_hook_fail_step, set_step_to_failed_2)
     And a step
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -411,7 +411,7 @@ TEST_F(run_scenario_hook_fail_step, set_step_to_failed_3)
   int argc = sizeof(argv) / sizeof(argv[0]);
   [[maybe_unused]] auto& args = cuke::get_program_args(argc, argv);
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);

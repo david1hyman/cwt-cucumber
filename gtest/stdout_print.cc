@@ -59,7 +59,7 @@ TEST_F(stdout_print, scenario_pass)
     Given a step 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   cuke::test_runner runner;
@@ -81,7 +81,7 @@ TEST_F(stdout_print, scenario_fail)
     And this fails
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   cuke::test_runner runner;
@@ -102,7 +102,7 @@ TEST_F(stdout_print, scenario_undefined_1)
     And something else
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   cuke::test_runner runner;
@@ -123,7 +123,7 @@ TEST_F(stdout_print, scenario_undefined_2)
     And this fails
  )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   cuke::test_runner runner;
@@ -148,7 +148,7 @@ TEST_F(stdout_print, scenario_outline)
 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   cuke::test_runner runner;
@@ -175,7 +175,7 @@ TEST_F(stdout_print, scenario_outline_datatable)
 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   cuke::test_runner runner;
@@ -199,7 +199,7 @@ TEST_F(stdout_print, scenario_from_file)
 
   const cuke::feature_file& file = prog_args.get_feature_files().back();
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_from_file(file);
 
   cuke::test_runner runner;
@@ -219,7 +219,7 @@ TEST_F(stdout_print, final_result_1)
     Given a step 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   cuke::test_runner runner;
@@ -249,7 +249,7 @@ TEST_F(stdout_print, final_result_2)
     Given a step 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   cuke::test_runner runner;
@@ -278,7 +278,7 @@ TEST_F(stdout_print, final_result_3)
     And this fails 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   cuke::test_runner runner;
@@ -307,7 +307,7 @@ TEST_F(stdout_print, final_result_4)
     And this fails
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   cuke::test_runner runner;
@@ -341,7 +341,7 @@ TEST_F(stdout_print, scenario_fail_final_form_file)
 
   const cuke::feature_file& file = prog_args.get_feature_files().back();
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_from_file(file);
 
   cuke::test_runner runner;
@@ -368,7 +368,7 @@ TEST_F(stdout_print, scenario_fail_final_form_file_quiet)
   cuke::program_args& prog_args = cuke::get_program_args(argc, argv);
   const cuke::feature_file& file = prog_args.get_feature_files().back();
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_from_file(file);
 
   cuke::test_runner runner;
@@ -395,7 +395,7 @@ TEST_F(stdout_print, scenario_fail_final_form_file_q)
   cuke::program_args& prog_args = cuke::get_program_args(argc, argv);
   const cuke::feature_file& file = prog_args.get_feature_files().back();
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_from_file(file);
 
   cuke::test_runner runner;
@@ -421,7 +421,7 @@ TEST_F(stdout_print, verbose_tags)
   int argc = sizeof(argv) / sizeof(argv[0]);
   [[maybe_unused]] auto& args = cuke::get_program_args(argc, argv);
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   cuke::test_runner runner;
@@ -439,7 +439,7 @@ TEST_F(stdout_print, log_disabled)
 
   cuke::log::disable();
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   cuke::test_runner runner;
@@ -460,7 +460,7 @@ TEST_F(stdout_print, log_disabled_w_json_output)
   int argc = sizeof(argv) / sizeof(argv[0]);
   [[maybe_unused]] auto& args = cuke::get_program_args(argc, argv);
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   cuke::test_runner runner;
