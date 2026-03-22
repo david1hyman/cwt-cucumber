@@ -5,7 +5,6 @@
 #include <ranges>
 
 #include "log.hpp"
-#include "options.hpp"
 
 namespace cuke::internal
 {
@@ -14,7 +13,7 @@ const ast::gherkin_document& parser::head() const noexcept { return m_head; }
 
 bool parser::error() const noexcept { return m_error; }
 
-void parser::parse_from_file(const feature_file& file)
+void parser::parse_from_file(const cuke::feature_file& file)
 {
   parse_from_file(file.path);
 }

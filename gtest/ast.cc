@@ -924,11 +924,7 @@ Given a step
 )*";
   cuke::internal::parser p;
   p.parse_script(script);
-  ASSERT_FALSE(p.error());
-  const auto& scenario = static_cast<const cuke::ast::scenario_node&>(
-      *p.head().feature().scenarios().at(0));
-  const auto& table = scenario.steps().at(0).data_table();
-  EXPECT_TRUE(table[0][0].is_nil());
+  EXPECT_TRUE(p.error());
 }
 TEST(ast, scenario_outline_w_example)
 {

@@ -9,6 +9,7 @@
 #include "lexer.hpp"
 #include "table.hpp"
 #include "token.hpp"
+#include "options.hpp"
 #include "util.hpp"
 
 namespace cuke::internal
@@ -20,7 +21,7 @@ class parser
   [[nodiscard]] const ast::gherkin_document& head() const noexcept;
   [[nodiscard]] bool error() const noexcept;
 
-  void parse_from_file(const feature_file& file);
+  void parse_from_file(const cuke::feature_file& file);
   void parse_from_file(std::string_view filepath);
   void parse_script(std::string_view script);
 
