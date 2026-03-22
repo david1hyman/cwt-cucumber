@@ -48,7 +48,7 @@ TEST_F(run_scenarios_dry_run, run_scenario_dry_long_option)
 
   make_args("--dry-run");
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -76,7 +76,7 @@ TEST_F(run_scenarios_dry_run, run_scenario_dry_short_option)
 
   make_args("-d");
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -108,7 +108,7 @@ TEST_F(run_scenarios_dry_run, run_scenario_outline_dry_short_option)
 
   make_args("-d");
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -136,7 +136,7 @@ TEST_F(run_scenarios_dry_run, run_scenario_dry_w_undefined_step)
 
   make_args("-d");
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -174,7 +174,7 @@ TEST_F(run_scenarios_dry_run, run_scenario_outline_dry_w_undefined_step)
 
   make_args("-d");
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);

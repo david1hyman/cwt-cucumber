@@ -329,7 +329,7 @@ void test_runner::run()
   }
   for (const auto& feature : get_program_args().get_feature_files())
   {
-    parser p;
+    internal::parser p;
     p.parse_from_file(feature.path);
     if (!feature.lines_to_run.empty())
     {

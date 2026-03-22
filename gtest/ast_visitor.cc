@@ -41,7 +41,7 @@ TEST(ast_visitor, for_each_scenario)
     Scenario: a scenario 
     Given a step 
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   count_scenarios visitor;
   visitor.setup();
@@ -59,7 +59,7 @@ TEST(ast_visitor, for_each_scenario_outline)
     Scenario Outline: a scenario Outline 
     Given a step 
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   count_scenarios visitor;
   p.for_each_scenario(visitor);
@@ -81,7 +81,7 @@ TEST(ast_visitor, for_each_scenario_and_scenario_outline)
     | 1   |
     
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   ASSERT_FALSE(p.error());
   count_scenarios visitor;

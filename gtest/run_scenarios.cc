@@ -29,7 +29,7 @@ TEST_F(run_scenarios_1, run_scenario)
     Given a step 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -46,7 +46,7 @@ TEST_F(run_scenarios_1, run_scenario_w_multiple_steps)
     Given a step 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -72,7 +72,7 @@ TEST_F(run_scenarios_1, run_multiple_scenarios)
     * a step 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -90,7 +90,7 @@ TEST_F(run_scenarios_1, background)
     Given a step 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -127,7 +127,7 @@ TEST_F(run_scenarios_2, run_scenario)
     Given a step with 5 and "hello world"
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -147,7 +147,7 @@ TEST_F(run_scenarios_2, run_scenario_outline)
       | 99    | "scenario outline" | 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -188,7 +188,7 @@ TEST_F(run_scenarios_3, scenario_outline_w_background)
       | 2   | 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -231,7 +231,7 @@ TEST_F(run_scenarios_4, integer_values_as_string)
       | 123  | 999       |
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -250,7 +250,7 @@ TEST_F(run_scenarios_4, negative_integers_as_string)
       | -123 | -999      |
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -269,7 +269,7 @@ TEST_F(run_scenarios_4, floating_points_as_string)
       | 3.12 | -999.99   |
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -314,7 +314,7 @@ TEST_F(run_scenarios_5, data_table_w_vars_1)
       | 5   | 999       |
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -341,7 +341,7 @@ TEST_F(run_scenarios_5, data_table_w_vars_2)
       | 3       | 4         |
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -368,7 +368,7 @@ TEST_F(run_scenarios_5, data_table_w_vars_3)
       | 9       | 0         |
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -394,7 +394,7 @@ TEST_F(run_scenarios_5, data_table_w_vars_4)
       | some text | with a var |
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -420,7 +420,7 @@ TEST_F(run_scenarios_5, data_table_w_vars_5)
       | here |
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -448,7 +448,7 @@ TEST_F(run_scenarios_5, data_table_w_vars_6)
       | 101     | 102     | something else |
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -476,7 +476,7 @@ TEST_F(run_scenarios_5, data_table_w_vars_key_doesnt_exist)
       | 3       | 4         |
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   EXPECT_THROW({ p.parse_script(script); }, std::runtime_error);
 }
 
@@ -525,7 +525,7 @@ TEST_F(run_scenarios_6, match_step_with_1_arg)
 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -543,7 +543,7 @@ TEST_F(run_scenarios_6, match_step_with_2_arg)
 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -576,7 +576,7 @@ TEST_F(run_scenarios_7, feature_description_w_comments)
 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -598,7 +598,7 @@ TEST_F(run_scenarios_7, scenario_description_w_comments)
 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);

@@ -55,7 +55,7 @@ TEST_F(run_scenarios_tags, tagged_feature)
     Scenario: a scenario 
     Given a step 
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   make_args("@tag1");
@@ -74,7 +74,7 @@ TEST_F(run_scenarios_tags, tagged_scenario)
     Scenario: a scenario 
     Given a step 
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   make_args("@tag1");
@@ -99,7 +99,7 @@ TEST_F(run_scenarios_tags, tagged_scenarios_1)
     Scenario: a scenario 
     Given a step 
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   make_args("not @tag1");
@@ -124,7 +124,7 @@ TEST_F(run_scenarios_tags, tagged_scenarios_2)
     Scenario: a scenario 
     Given a step 
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   make_args("@tag1");
@@ -148,7 +148,7 @@ TEST_F(run_scenarios_tags, tagged_scenarios_3)
     Scenario: a scenario 
     Given a step 
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   make_args("@tag1 or @tag2 and not @tag3");
@@ -175,7 +175,7 @@ TEST_F(run_scenarios_tags, tagged_scenario_outline_1)
     | value | 
     | 1     | 
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   make_args("@tag1");
@@ -202,7 +202,7 @@ TEST_F(run_scenarios_tags, tagged_scenario_outline_2)
     | value | 
     | 99    | 
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   make_args("@tag1 and @tag2");
@@ -231,7 +231,7 @@ TEST_F(run_scenarios_tags, tagged_scenario_outline_3)
     | value | 
     | 1     | 
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   make_args("@tag1 and @tag2");
@@ -259,7 +259,7 @@ TEST_F(run_scenarios_tags, tagged_scenario_outline_4)
     | value | 
     | 99    | 
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   make_args("@tag1 and @tag2 and @tag3");
@@ -291,7 +291,7 @@ TEST_F(run_scenarios_tags, tagged_scenario_and_scenario_outline_1)
     | value | 
     | 99    | 
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   make_args("@tag1 and not @tag2");
@@ -323,7 +323,7 @@ TEST_F(run_scenarios_tags, tagged_scenario_and_scenario_outline_2)
     | value | 
     | 99    | 
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   make_args("@tag1 and @tag3");
@@ -333,6 +333,45 @@ TEST_F(run_scenarios_tags, tagged_scenario_and_scenario_outline_2)
 
   EXPECT_EQ(run_scenarios_tags::call_count, 1);
   EXPECT_EQ(run_scenarios_tags::test_value, 99);
+}
+
+TEST_F(run_scenarios_tags, tagged_scenario_with_hyphen)
+{
+  const char* script = R"*(
+    Feature: a feature 
+
+    @my-tag
+    Scenario: a scenario 
+    Given a step 
+  )*";
+  cuke::internal::parser p;
+  p.parse_script(script);
+
+  make_args("@my-tag");
+
+  cuke::test_runner runner;
+  p.for_each_scenario(runner);
+
+  EXPECT_EQ(run_scenarios_tags::call_count, 1);
+}
+TEST_F(run_scenarios_tags, tagged_scenario_with_hyphen_not_matching)
+{
+  const char* script = R"*(
+    Feature: a feature 
+
+    @my-tag
+    Scenario: a scenario 
+    Given a step 
+  )*";
+  cuke::internal::parser p;
+  p.parse_script(script);
+
+  make_args("@other-tag");
+
+  cuke::test_runner runner;
+  p.for_each_scenario(runner);
+
+  EXPECT_EQ(run_scenarios_tags::call_count, 0);
 }
 
 #include "../src/hooks.hpp"
@@ -368,7 +407,7 @@ TEST_F(run_scenarios_special_tags, skip_1)
     Scenario: a scenario 
     Given a step 
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   make_args("@skip");
 
@@ -391,7 +430,7 @@ TEST_F(run_scenarios_special_tags, skip_2)
     Scenario: this runs
     Given a step 
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   make_args("@skip");
 
@@ -411,7 +450,7 @@ TEST_F(run_scenarios_special_tags, ignore_1)
     Scenario: a scenario 
     Given a step 
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   make_args("@ignore");
 
@@ -432,7 +471,7 @@ TEST_F(run_scenarios_special_tags, ignore_2)
     Scenario: this runs
     Given a step 
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   make_args("@ignore");
 

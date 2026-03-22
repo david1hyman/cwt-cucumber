@@ -71,7 +71,7 @@ TEST_F(run_scenarios_continue, continue_on_fail_1)
     * this fails
     * a step 
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   make_args("--continue-on-failure");
@@ -96,7 +96,7 @@ TEST_F(run_scenarios_continue, continue_on_fail_2)
     * this fails
     * a step 
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   make_args("-c");
@@ -123,7 +123,7 @@ TEST_F(run_scenarios_continue, continue_on_fail_3)
     Scenario: a scenario 
     * a step 
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   make_args("-c");
@@ -147,7 +147,7 @@ TEST_F(run_scenarios_continue, continue_on_fail_4)
     * this is undefined ...  
     * a step  
   )*";
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
 
   make_args("-c");

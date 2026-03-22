@@ -76,7 +76,7 @@ TEST_F(report, json_single_scenario)
     Given a step with 123 and "hello world"
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -135,7 +135,7 @@ TEST_F(report, json_single_scenario_w_tags)
     Given a step with 123 and "hello world"
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -214,7 +214,7 @@ TEST_F(report, json_scenario_outline)
     | 999  | "xx" |
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -280,7 +280,7 @@ TEST_F(report, failing_scenario)
     And this fails 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
@@ -346,7 +346,7 @@ TEST_F(report, undefined_step)
     And here is an undefined step 
   )*";
 
-  cuke::parser p;
+  cuke::internal::parser p;
   p.parse_script(script);
   cuke::test_runner runner;
   p.for_each_scenario(runner);
