@@ -17,12 +17,9 @@ TEST(ast, feature_w_parser)
 TEST(ast, feature_error)
 {
   const char* script = "this is no feature";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-  cuke::ast::feature_node feature = cuke::internal::parse_feature(lex);
-  EXPECT_TRUE(lex.error());
-  EXPECT_TRUE(feature.name().empty());
-  EXPECT_TRUE(feature.keyword().empty());
+  cuke::internal::parser p;
+  p.parse_script(script);
+  EXPECT_TRUE(p.error());
 }
 TEST(ast, feature_error_parser)
 {
@@ -222,9 +219,10 @@ TEST(ast, parser_scenario_outline_two_examples)
 TEST(ast, feature)
 {
   const char* script = "Feature: A Feature";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-  cuke::ast::feature_node feature = cuke::internal::parse_feature(lex);
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& feature = p.head().feature();
   EXPECT_EQ(feature.keyword(), std::string("Feature"));
   EXPECT_EQ(feature.name(), std::string("A Feature"));
   EXPECT_EQ(feature.line(), 1);
@@ -233,12 +231,13 @@ TEST(ast, feature_w_description)
 {
   const char* script = R"*(
   Feature: A Feature
-  with some 
+  with some
   description below
   )*";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-  cuke::ast::feature_node feature = cuke::internal::parse_feature(lex);
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& feature = p.head().feature();
   EXPECT_EQ(feature.description().size(), 2);
   EXPECT_EQ(feature.description().at(0), std::string("with some"));
   EXPECT_EQ(feature.description().at(1), std::string("description below"));
@@ -251,9 +250,10 @@ TEST(ast, feature_w_tags)
   @tag1 @tag2
   Feature: A Feature
   )*";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-  cuke::ast::feature_node feature = cuke::internal::parse_feature(lex);
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& feature = p.head().feature();
   EXPECT_EQ(feature.tags().size(), 2);
   EXPECT_EQ(feature.tags().at(0), std::string("@tag1"));
   EXPECT_EQ(feature.tags().at(1), std::string("@tag2"));
@@ -266,21 +266,23 @@ TEST(ast, no_background)
   Feature: A feature
   Scenario: A Scenario
   )*";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-  cuke::ast::feature_node feature = cuke::internal::parse_feature(lex);
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& feature = p.head().feature();
   ASSERT_FALSE(feature.has_background());
 }
 TEST(ast, background_in_feature)
 {
   const char* script = R"*(
   Feature: A feature
-  Background: A background 
-  Given With a step 
+  Background: A background
+  Given With a step
   )*";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-  cuke::ast::feature_node feature = cuke::internal::parse_feature(lex);
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& feature = p.head().feature();
   ASSERT_TRUE(feature.has_background());
   EXPECT_EQ(feature.background().keyword(), std::string("Background"));
   EXPECT_EQ(feature.background().name(), std::string("A background"));
@@ -293,14 +295,15 @@ TEST(ast, background_w_description)
 {
   const char* script = R"*(
   Feature: A feature
-  Background: A background 
+  Background: A background
   some description
   given here
-  Given With a step 
+  Given With a step
   )*";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-  cuke::ast::feature_node feature = cuke::internal::parse_feature(lex);
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& feature = p.head().feature();
   ASSERT_TRUE(feature.has_background());
   EXPECT_EQ(feature.background().description().size(), 2);
   EXPECT_EQ(feature.background().description().at(0),
@@ -313,17 +316,18 @@ TEST(ast, background_w_following_scenario)
 {
   const char* script = R"*(
   Feature: A feature
-  Background: A background 
+  Background: A background
   some description
   given here
   Given With a step
 
-  Scenario: Scenario follows here now 
+  Scenario: Scenario follows here now
   Given A Step
   )*";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-  cuke::ast::feature_node feature = cuke::internal::parse_feature(lex);
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& feature = p.head().feature();
   ASSERT_EQ(feature.scenarios().size(), 1);
   ASSERT_TRUE(feature.has_background());
   EXPECT_EQ(feature.background().steps().size(), 1);
@@ -332,25 +336,26 @@ TEST(ast, background_w_following_scenario_w_tags)
 {
   const char* script = R"*(
   Feature: A feature
-  Background: A background 
+  Background: A background
   some description
   given here
   Given With a step
-  
+
   @tag
-  Scenario: Scenario follows here now 
+  Scenario: Scenario follows here now
   Given A Step
   )*";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-  cuke::ast::feature_node feature = cuke::internal::parse_feature(lex);
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& feature = p.head().feature();
 
   ASSERT_TRUE(feature.has_background());
   EXPECT_EQ(feature.background().steps().size(), 1);
 
   ASSERT_EQ(feature.scenarios().size(), 1);
-  cuke::ast::scenario_node& scenario =
-      static_cast<cuke::ast::scenario_node&>(*feature.scenarios().at(0));
+  const cuke::ast::scenario_node& scenario =
+      static_cast<const cuke::ast::scenario_node&>(*feature.scenarios().at(0));
   EXPECT_EQ(scenario.tags().size(), 1);
   EXPECT_EQ(scenario.tags().at(0), std::string("@tag"));
 }
@@ -361,9 +366,10 @@ TEST(ast, feature_w_scenario)
   Feature: A feature
   Scenario: A Scenario
   )*";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-  cuke::ast::feature_node feature = cuke::internal::parse_feature(lex);
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& feature = p.head().feature();
   ASSERT_EQ(feature.scenarios().size(), 1);
   ASSERT_EQ(feature.scenarios().at(0)->type(), cuke::ast::node_type::scenario);
   EXPECT_EQ(feature.scenarios().at(0)->keyword(), std::string("Scenario"));
@@ -374,12 +380,13 @@ TEST(ast, feature_w_descr_and_scenario)
   const char* script = R"*(
   Feature: A feature
   some description
-  inserted here 
+  inserted here
   Scenario: A Scenario
   )*";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-  cuke::ast::feature_node feature = cuke::internal::parse_feature(lex);
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& feature = p.head().feature();
   EXPECT_EQ(feature.description().size(), 2);
   ASSERT_EQ(feature.scenarios().size(), 1);
   EXPECT_EQ(feature.scenarios().at(0)->keyword(), std::string("Scenario"));
@@ -389,60 +396,64 @@ TEST(ast, feature_w_descr_and_scenario)
 TEST(ast, scenario_w_steps)
 {
   const char* script = R"*(
+  Feature: test
   Scenario: A Scenario
-  Given A step with value 5 
+  Given A step with value 5
   )*";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-
-  auto scenarios = cuke::internal::parse_scenarios(lex, {}, nullptr, "");
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& scenarios = p.head().feature().scenarios();
   ASSERT_EQ(scenarios.size(), 1);
 }
 TEST(ast, scenarios_w_steps)
 {
   const char* script = R"*(
+  Feature: test
   Scenario: A Scenario
-  Given A step with value 5 
-  
-  Scenario: A Scenario
-  Given A step with value 5 
-  )*";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
+  Given A step with value 5
 
-  auto scenarios = cuke::internal::parse_scenarios(lex, {}, nullptr, "");
+  Scenario: A Scenario
+  Given A step with value 5
+  )*";
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& scenarios = p.head().feature().scenarios();
   ASSERT_EQ(scenarios.size(), 2);
 }
 TEST(ast, scenarios_wo_name)
 {
   const char* script = R"*(
-  Scenario: 
-  Given A step with value 5 
+  Feature: test
+  Scenario:
+  Given A step with value 5
   )*";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-
-  auto scenarios = cuke::internal::parse_scenarios(lex, {}, nullptr, "");
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& scenarios = p.head().feature().scenarios();
   ASSERT_EQ(scenarios.size(), 1);
   EXPECT_TRUE(scenarios.at(0)->name().empty());
 }
 TEST(ast, scenario_w_description)
 {
   const char* script = R"*(
+  Feature: test
   Scenario: A Scenario
-  with some 
-  multi line 
+  with some
+  multi line
   description
-  Given A step with value 5 
+  Given A step with value 5
   )*";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-
-  auto scenarios = cuke::internal::parse_scenarios(lex, {}, nullptr, "");
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& scenarios = p.head().feature().scenarios();
   ASSERT_EQ(scenarios.size(), 1);
 
-  cuke::ast::scenario_node& scenario =
-      static_cast<cuke::ast::scenario_node&>(*scenarios.at(0));
+  const cuke::ast::scenario_node& scenario =
+      static_cast<const cuke::ast::scenario_node&>(*scenarios.at(0));
   ASSERT_EQ(scenario.description().size(), 3);
   EXPECT_EQ(scenario.description().at(0), std::string("with some"));
   EXPECT_EQ(scenario.description().at(1), std::string("multi line"));
@@ -455,17 +466,18 @@ TEST(ast, scenario_w_description)
 TEST(ast, scenario_w_tags)
 {
   const char* script = R"*(
+  Feature: test
   @tag1 @tag2
   Scenario: A Scenario
   )*";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-
-  auto scenarios = cuke::internal::parse_scenarios(lex, {}, nullptr, "");
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& scenarios = p.head().feature().scenarios();
   ASSERT_EQ(scenarios.size(), 1);
 
-  cuke::ast::scenario_node& scenario =
-      static_cast<cuke::ast::scenario_node&>(*scenarios.at(0));
+  const cuke::ast::scenario_node& scenario =
+      static_cast<const cuke::ast::scenario_node&>(*scenarios.at(0));
   ASSERT_EQ(scenario.tags().size(), 2);
   EXPECT_EQ(scenario.tags().at(0), std::string("@tag1"));
   EXPECT_EQ(scenario.tags().at(1), std::string("@tag2"));
@@ -473,11 +485,17 @@ TEST(ast, scenario_w_tags)
 
 TEST(ast, parse_step)
 {
-  const char* script = "Given A step with value 5";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-
-  auto steps = cuke::internal::parse_steps(lex);
+  const char* script = R"*(
+  Feature: test
+  Scenario: test
+  Given A step with value 5
+  )*";
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& scenario = static_cast<const cuke::ast::scenario_node&>(
+      *p.head().feature().scenarios().at(0));
+  const auto& steps = scenario.steps();
   ASSERT_EQ(steps.size(), 1);
   EXPECT_EQ(steps.at(0).keyword(), std::string("Given"));
   EXPECT_EQ(steps.at(0).name(), std::string("A step with value 5"));
@@ -486,18 +504,21 @@ TEST(ast, parse_step)
 TEST(ast, parse_step_w_doc_string)
 {
   const char* script = R"*(
+  Feature: test
+  Scenario: test
     Given A step with value 5
     """
-    this is 
-    a multiline 
+    this is
+    a multiline
     doc string
-    """ 
+    """
   )*";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-
-  auto steps = cuke::internal::parse_steps(lex);
-  ASSERT_FALSE(lex.error());
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& scenario = static_cast<const cuke::ast::scenario_node&>(
+      *p.head().feature().scenarios().at(0));
+  const auto& steps = scenario.steps();
   ASSERT_EQ(steps.at(0).doc_string().size(), 3);
   EXPECT_EQ(steps.at(0).doc_string().at(0), std::string("this is"));
   EXPECT_EQ(steps.at(0).doc_string().at(1), std::string("a multiline"));
@@ -506,18 +527,21 @@ TEST(ast, parse_step_w_doc_string)
 TEST(ast, parse_step_w_doc_string_w_backticks)
 {
   const char* script = R"*(
+  Feature: test
+  Scenario: test
     Given A step with value 5
-    ``` 
-    this is 
-    a multiline 
+    ```
+    this is
+    a multiline
     doc string
-    ``` 
+    ```
   )*";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-
-  auto steps = cuke::internal::parse_steps(lex);
-  ASSERT_FALSE(lex.error());
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& scenario = static_cast<const cuke::ast::scenario_node&>(
+      *p.head().feature().scenarios().at(0));
+  const auto& steps = scenario.steps();
   ASSERT_EQ(steps.at(0).doc_string().size(), 3);
   EXPECT_EQ(steps.at(0).doc_string().at(0), std::string("this is"));
   EXPECT_EQ(steps.at(0).doc_string().at(1), std::string("a multiline"));
@@ -527,15 +551,18 @@ TEST(ast, parse_step_w_doc_string_w_backticks)
 TEST(ast, multiple_steps)
 {
   const char* script = R"*(
+  Feature: test
+  Scenario: test
     Given A step with value 5
     Then Another step
     And One more
   )*";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-
-  auto steps = cuke::internal::parse_steps(lex);
-  ASSERT_FALSE(lex.error());
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& scenario = static_cast<const cuke::ast::scenario_node&>(
+      *p.head().feature().scenarios().at(0));
+  const auto& steps = scenario.steps();
   ASSERT_EQ(steps.size(), 3);
 
   EXPECT_EQ(steps.at(0).keyword(), std::string("Given"));
@@ -549,20 +576,23 @@ TEST(ast, multiple_steps)
 TEST(ast, multiple_steps_w_docstring)
 {
   const char* script = R"*(
+  Feature: test
+  Scenario: test
     Given A step with value 5
     Then Another step
-    """   
+    """
     a multi line
     doc string
-    is here 
-    """  
+    is here
+    """
     And One more
   )*";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-
-  auto steps = cuke::internal::parse_steps(lex);
-  ASSERT_FALSE(lex.error());
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& scenario = static_cast<const cuke::ast::scenario_node&>(
+      *p.head().feature().scenarios().at(0));
+  const auto& steps = scenario.steps();
   ASSERT_EQ(steps.size(), 3);
 
   ASSERT_EQ(steps.at(1).doc_string().size(), 3);
@@ -573,49 +603,54 @@ TEST(ast, multiple_steps_w_docstring)
 TEST(ast, multiple_steps_error)
 {
   const char* script = R"*(
+  Feature: test
+  Scenario: test
     Given A step with value 5
     Then Another step
     this line is invalid!
     -> error detection does not happen in parse_steps()
-    """  
+    """
     a multi line
     doc string
-    is here 
-    """  
+    is here
+    """
     And One more
   )*";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-
-  auto steps = cuke::internal::parse_steps(lex);
-  ASSERT_EQ(steps.size(), 2);
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_TRUE(p.error());
 }
 
 TEST(ast, empty_datatable)
 {
   const char* script = R"*(
-    Given A step with value 5
+  Feature: test
+  Scenario: test
+  Given A step with value 5
   )*";
-
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-
-  auto steps = cuke::internal::parse_steps(lex);
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& scenario = static_cast<const cuke::ast::scenario_node&>(
+      *p.head().feature().scenarios().at(0));
+  const auto& steps = scenario.steps();
   EXPECT_EQ(steps.at(0).data_table().cells_count(), 0);
 }
 
 TEST(ast, datatable)
 {
   const char* script = R"*(
+  Feature: test
+  Scenario: test
     Given A step with value 5
     | 1 | 2 |
   )*";
-
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-
-  auto steps = cuke::internal::parse_steps(lex);
-  ASSERT_FALSE(lex.error());
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& scenario = static_cast<const cuke::ast::scenario_node&>(
+      *p.head().feature().scenarios().at(0));
+  const auto& steps = scenario.steps();
   ASSERT_EQ(steps.size(), 1);
   ASSERT_EQ(steps.at(0).data_table().cells_count(), 2);
   ASSERT_EQ(steps.at(0).data_table().row_count(), 1);
@@ -625,15 +660,17 @@ TEST(ast, datatable)
 TEST(ast, datatable_w_string_and_word)
 {
   const char* script = R"*(
+  Feature: test
+  Scenario: test
     Given A step with value 5
     | "some string" | a_word |
   )*";
-
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-
-  auto steps = cuke::internal::parse_steps(lex);
-  ASSERT_FALSE(lex.error());
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& scenario = static_cast<const cuke::ast::scenario_node&>(
+      *p.head().feature().scenarios().at(0));
+  const auto& steps = scenario.steps();
   ASSERT_EQ(steps.size(), 1);
   ASSERT_EQ(steps.at(0).data_table().cells_count(), 2);
   ASSERT_EQ(steps.at(0).data_table().row_count(), 1);
@@ -645,32 +682,32 @@ TEST(ast, datatable_w_string_and_word)
 TEST(ast, datatable_missing_vertical)
 {
   const char* script = R"*(
+  Feature: test
+  Scenario: test
     Given A step with value 5
     | 1 | 2
   )*";
-
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-
-  auto steps = cuke::internal::parse_steps(lex);
-  ASSERT_TRUE(lex.error());
-  ASSERT_EQ(steps.size(), 1);
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_TRUE(p.error());
 }
 
 TEST(ast, datatable_multi_row)
 {
   const char* script = R"*(
+  Feature: test
+  Scenario: test
     Given A step with value 5
     | 1 | 2 |
-    | 3 | 4 | 
-    | 5 | 6 | 
+    | 3 | 4 |
+    | 5 | 6 |
   )*";
-
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-
-  auto steps = cuke::internal::parse_steps(lex);
-  ASSERT_FALSE(lex.error());
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& scenario = static_cast<const cuke::ast::scenario_node&>(
+      *p.head().feature().scenarios().at(0));
+  const auto& steps = scenario.steps();
   ASSERT_EQ(steps.size(), 1);
   ASSERT_EQ(steps.at(0).data_table().cells_count(), 6);
   ASSERT_EQ(steps.at(0).data_table().row_count(), 3);
@@ -684,18 +721,20 @@ TEST(ast, datatable_multi_row)
 TEST(ast, datatable_multi_row_w_following_step)
 {
   const char* script = R"*(
+  Feature: test
+  Scenario: test
     Given A step with value 5
     | 1 | 2 |
-    | 3 | 4 | 
-    | 5 | 6 | 
-    And Another step 
+    | 3 | 4 |
+    | 5 | 6 |
+    And Another step
   )*";
-
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-
-  auto steps = cuke::internal::parse_steps(lex);
-  ASSERT_FALSE(lex.error());
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& scenario = static_cast<const cuke::ast::scenario_node&>(
+      *p.head().feature().scenarios().at(0));
+  const auto& steps = scenario.steps();
   ASSERT_EQ(steps.size(), 2);
   ASSERT_EQ(steps.at(0).data_table().cells_count(), 6);
   ASSERT_EQ(steps.at(0).data_table().row_count(), 3);
@@ -710,32 +749,30 @@ TEST(ast, datatable_multi_row_w_following_step)
 TEST(ast, datatable_multi_row_error)
 {
   const char* script = R"*(
+  Feature: test
+  Scenario: test
     Given A step with value 5
     | 1 | 2 |
-    | 3 | 4  
-    | 5 | 6 | 
+    | 3 | 4
+    | 5 | 6 |
   )*";
-
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-
-  auto steps = cuke::internal::parse_steps(lex);
-  ASSERT_TRUE(lex.error());
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_TRUE(p.error());
 }
 
 TEST(ast, datatable_multi_row_wrong_row_size)
 {
   const char* script = R"*(
+  Feature: test
+  Scenario: test
     Given A step with value 5
     | 1 | 2 |
-    | 3 | 4 | 5 | 
+    | 3 | 4 | 5 |
   )*";
-
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-
-  auto steps = cuke::internal::parse_steps(lex);
-  ASSERT_TRUE(lex.error());
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_TRUE(p.error());
 }
 
 TEST(ast, feature_w_scenario_outline)
@@ -744,9 +781,10 @@ TEST(ast, feature_w_scenario_outline)
   Feature: A feature
   Scenario Outline: A Scenario Outline
   )*";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-  cuke::ast::feature_node feature = cuke::internal::parse_feature(lex);
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& feature = p.head().feature();
   ASSERT_EQ(feature.scenarios().size(), 1);
   ASSERT_EQ(feature.scenarios().at(0)->type(),
             cuke::ast::node_type::scenario_outline);
@@ -765,13 +803,13 @@ TEST(ast, feature_w_scenario_outline_steps)
   Then Next Step
   And Another
   )*";
-
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-  cuke::ast::feature_node feature = cuke::internal::parse_feature(lex);
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& feature = p.head().feature();
   ASSERT_EQ(feature.scenarios().size(), 1);
 
-  auto scenario_outline = static_cast<cuke::ast::scenario_outline_node&>(
+  const auto& scenario_outline = static_cast<const cuke::ast::scenario_outline_node&>(
       *feature.scenarios().at(0));
 
   ASSERT_EQ(scenario_outline.steps().size(), 3);
@@ -781,136 +819,185 @@ TEST(ast, feature_w_scenario_outline_steps)
 }
 TEST(ast, parse_cell_integer)
 {
-  const char* script = "1234 |";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-
-  cuke::value v = cuke::internal::parse_cell(lex, false);
-  EXPECT_EQ(v.as<int>(), 1234);
+  const char* script = R"*(
+Feature: test
+Scenario: test
+Given a step
+| 1234 |
+)*";
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& scenario = static_cast<const cuke::ast::scenario_node&>(
+      *p.head().feature().scenarios().at(0));
+  const auto& table = scenario.steps().at(0).data_table();
+  EXPECT_EQ(table[0][0].as<int>(), 1234);
 }
 TEST(ast, parse_cell_negative_integer)
 {
-  const char* script = "-1234 |";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-
-  cuke::value v = cuke::internal::parse_cell(lex, false);
-  EXPECT_EQ(v.as<int>(), -1234);
+  const char* script = R"*(
+Feature: test
+Scenario: test
+Given a step
+| -1234 |
+)*";
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& scenario = static_cast<const cuke::ast::scenario_node&>(
+      *p.head().feature().scenarios().at(0));
+  const auto& table = scenario.steps().at(0).data_table();
+  EXPECT_EQ(table[0][0].as<int>(), -1234);
 }
 TEST(ast, parse_cell_double)
 {
-  const char* script = "1234.1234 |";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-
-  cuke::value v = cuke::internal::parse_cell(lex, false);
-  EXPECT_EQ(v.as<double>(), 1234.1234);
+  const char* script = R"*(
+Feature: test
+Scenario: test
+Given a step
+| 1234.1234 |
+)*";
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& scenario = static_cast<const cuke::ast::scenario_node&>(
+      *p.head().feature().scenarios().at(0));
+  const auto& table = scenario.steps().at(0).data_table();
+  EXPECT_EQ(table[0][0].as<double>(), 1234.1234);
 }
 TEST(ast, parse_cell_string)
 {
-  const char* script = "\"hello world\" |";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-
-  cuke::value v = cuke::internal::parse_cell(lex, true);
-  EXPECT_EQ(v.as<std::string>(), std::string("hello world"));
+  const char* script = R"*(
+Feature: test
+Scenario: test
+Given a step
+| "hello world" |
+)*";
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& scenario = static_cast<const cuke::ast::scenario_node&>(
+      *p.head().feature().scenarios().at(0));
+  const auto& table = scenario.steps().at(0).data_table();
+  EXPECT_EQ(table[0][0].as<std::string>(), std::string("hello world"));
 }
 TEST(ast, parse_cell_word)
 {
-  const char* script = "hello |";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-
-  cuke::value v = cuke::internal::parse_cell(lex, false);
-  EXPECT_EQ(v.as<std::string>(), std::string("hello"));
+  const char* script = R"*(
+Feature: test
+Scenario: test
+Given a step
+| hello |
+)*";
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& scenario = static_cast<const cuke::ast::scenario_node&>(
+      *p.head().feature().scenarios().at(0));
+  const auto& table = scenario.steps().at(0).data_table();
+  EXPECT_EQ(table[0][0].as<std::string>(), std::string("hello"));
 }
 TEST(ast, parse_cell_unquoted_string)
 {
-  const char* script = "some arbitrary text and 1 2 3 numbers here |";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-
-  cuke::value v = cuke::internal::parse_cell(lex, false);
-  EXPECT_EQ(v.as<std::string>(),
+  const char* script = R"*(
+Feature: test
+Scenario: test
+Given a step
+| some arbitrary text and 1 2 3 numbers here |
+)*";
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& scenario = static_cast<const cuke::ast::scenario_node&>(
+      *p.head().feature().scenarios().at(0));
+  const auto& table = scenario.steps().at(0).data_table();
+  EXPECT_EQ(table[0][0].as<std::string>(),
             std::string("some arbitrary text and 1 2 3 numbers here"));
 }
 TEST(ast, parse_cell_empty_cell)
 {
-  const char* script = " |";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-
-  cuke::value v = cuke::internal::parse_cell(lex, false);
-  EXPECT_TRUE(v.is_nil());
-  EXPECT_TRUE(lex.error());
+  const char* script = R"*(
+Feature: test
+Scenario: test
+Given a step
+|  |
+)*";
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& scenario = static_cast<const cuke::ast::scenario_node&>(
+      *p.head().feature().scenarios().at(0));
+  const auto& table = scenario.steps().at(0).data_table();
+  EXPECT_TRUE(table[0][0].is_nil());
 }
 TEST(ast, scenario_outline_w_example)
 {
   const char* script = R"*(
+  Feature: test
   Scenario Outline: A Scenario Outline
-  Given A step with <one> and <two> 
+  Given A step with <one> and <two>
 
-  Examples: 
-  | one | two | 
-  | 123 | 456 | 
+  Examples:
+  | one | two |
+  | 123 | 456 |
   )*";
-
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-  auto scenarios = cuke::internal::parse_scenarios(lex, {}, nullptr, "");
-  ASSERT_FALSE(lex.error());
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& scenarios = p.head().feature().scenarios();
   ASSERT_EQ(scenarios.size(), 1);
 
-  auto& scenario_outline =
-      static_cast<cuke::ast::scenario_outline_node&>(*scenarios.at(0));
+  const auto& scenario_outline =
+      static_cast<const cuke::ast::scenario_outline_node&>(*scenarios.at(0));
   ASSERT_EQ(scenario_outline.examples().size(), 1);
 }
 TEST(ast, scenario_outline_w_2_example)
 {
   const char* script = R"*(
+  Feature: test
   Scenario Outline: A Scenario Outline
-  Given A step with <one> and <two> 
+  Given A step with <one> and <two>
 
-  Examples: 
-  | one | two | 
-  | 123 | 456 | 
-  Examples: 
-  | one | two | 
-  | 123 | 456 | 
-  | 123 | 456 | 
+  Examples:
+  | one | two |
+  | 123 | 456 |
+  Examples:
+  | one | two |
+  | 123 | 456 |
+  | 123 | 456 |
   )*";
-
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-  auto scenarios = cuke::internal::parse_scenarios(lex, {}, nullptr, "");
-  ASSERT_FALSE(lex.error());
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& scenarios = p.head().feature().scenarios();
   ASSERT_EQ(scenarios.size(), 1);
 
-  auto& scenario_outline =
-      static_cast<cuke::ast::scenario_outline_node&>(*scenarios.at(0));
+  const auto& scenario_outline =
+      static_cast<const cuke::ast::scenario_outline_node&>(*scenarios.at(0));
   ASSERT_EQ(scenario_outline.examples().size(), 2);
 }
 
 TEST(ast, example_w_tags)
 {
   const char* script = R"*(
+  Feature: test
   Scenario Outline: A Scenario Outline
-  Given A step with <var 1> and <var 2> 
+  Given A step with <var 1> and <var 2>
 
-  @tag1 @tag2 
-  Examples: 
-  | var 1 | var 2 | 
-  | 123   | 456   | 
+  @tag1 @tag2
+  Examples:
+  | var 1 | var 2 |
+  | 123   | 456   |
   )*";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-  auto scenarios = cuke::internal::parse_scenarios(lex, {}, nullptr, "");
-  ASSERT_FALSE(lex.error());
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& scenarios = p.head().feature().scenarios();
   ASSERT_EQ(scenarios.size(), 1);
   ASSERT_EQ(scenarios.back()->type(), cuke::ast::node_type::scenario_outline);
 
-  auto& scenario_outline =
-      static_cast<cuke::ast::scenario_outline_node&>(*scenarios.at(0));
+  const auto& scenario_outline =
+      static_cast<const cuke::ast::scenario_outline_node&>(*scenarios.at(0));
   ASSERT_EQ(scenario_outline.examples().size(), 1);
   ASSERT_EQ(scenario_outline.examples().at(0).tags().size(), 2);
   ASSERT_EQ(scenario_outline.examples().at(0).tags().at(0),
@@ -922,25 +1009,26 @@ TEST(ast, example_w_tags)
 TEST(ast, example_w_name_description)
 {
   const char* script = R"*(
+  Feature: test
   Scenario Outline: A Scenario Outline
-  Given A step with <var 1> and <var 2> 
+  Given A step with <var 1> and <var 2>
 
-  @tag1 @tag2 
+  @tag1 @tag2
   Examples: some example
-  with some 
-  description 
-  | var 1 | var 2 | 
-  | 123   | 456   | 
+  with some
+  description
+  | var 1 | var 2 |
+  | 123   | 456   |
   )*";
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-  auto scenarios = cuke::internal::parse_scenarios(lex, {}, nullptr, "");
-  ASSERT_FALSE(lex.error());
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& scenarios = p.head().feature().scenarios();
   ASSERT_EQ(scenarios.size(), 1);
   ASSERT_EQ(scenarios.back()->type(), cuke::ast::node_type::scenario_outline);
 
-  auto& scenario_outline =
-      static_cast<cuke::ast::scenario_outline_node&>(*scenarios.at(0));
+  const auto& scenario_outline =
+      static_cast<const cuke::ast::scenario_outline_node&>(*scenarios.at(0));
   ASSERT_EQ(scenario_outline.examples().size(), 1);
   EXPECT_EQ(scenario_outline.examples().at(0).name(),
             std::string("some example"));
@@ -954,50 +1042,54 @@ TEST(ast, example_w_name_description)
 TEST(ast, two_example_w_name_description)
 {
   const char* script = R"*(
+  Feature: test
   Scenario Outline: A Scenario Outline
-  Given A step with <var 1> and <var 2> 
+  Given A step with <var 1> and <var 2>
 
-  @tag1 @tag2 
+  @tag1 @tag2
   Examples: some example
-  with some 
-  description 
-  | var 1 | var 2 | 
+  with some
+  description
+  | var 1 | var 2 |
   | 123   | 45    |
 
   Examples: another example
-  with some 
-  description 
-  | var 1 | var 2 | 
+  with some
+  description
+  | var 1 | var 2 |
   | 123   | 456   |
-  
-  )*";
 
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-  auto scenarios = cuke::internal::parse_scenarios(lex, {}, nullptr, "");
-  ASSERT_FALSE(lex.error());
+  )*";
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& scenarios = p.head().feature().scenarios();
   ASSERT_EQ(scenarios.size(), 1);
   ASSERT_EQ(scenarios.back()->type(), cuke::ast::node_type::scenario_outline);
 
-  auto& scenario_outline =
-      static_cast<cuke::ast::scenario_outline_node&>(*scenarios.at(0));
+  const auto& scenario_outline =
+      static_cast<const cuke::ast::scenario_outline_node&>(*scenarios.at(0));
   ASSERT_EQ(scenario_outline.examples().size(), 2);
 }
 TEST(ast, example_name_description)
 {
   const char* script = R"*(
+  Feature: test
+  Scenario Outline: test
+  Given a step
   Examples: An example
-  with some 
-  multi line 
-  description here 
-  | one | two | 
-  | 123 | 456 | 
+  with some
+  multi line
+  description here
+  | one | two |
+  | 123 | 456 |
   )*";
-
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-
-  auto example = cuke::internal::parse_example(lex, {});
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& outline = static_cast<const cuke::ast::scenario_outline_node&>(
+      *p.head().feature().scenarios().at(0));
+  const auto& example = outline.examples().at(0);
   EXPECT_EQ(example.name(), std::string("An example"));
   ASSERT_EQ(example.description().size(), 3);
   EXPECT_EQ(example.description().at(0), std::string("with some"));
@@ -1007,39 +1099,42 @@ TEST(ast, example_name_description)
 TEST(ast, examples_invalid_table)
 {
   const char* script = R"*(
+  Feature: test
+  Scenario Outline: test
+  Given a step
   Examples: An example
-  with some 
-  multi line 
-  description here 
-  | one | two  
-  | 123 | 456 | 
+  with some
+  multi line
+  description here
+  | one | two
+  | 123 | 456 |
   )*";
-
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-
-  auto example = cuke::internal::parse_example(lex, {});
-  ASSERT_TRUE(lex.error());
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_TRUE(p.error());
 }
 TEST(ast, examples_table_w_linebreak)
 {
   const char* script = R"*(
+  Feature: test
+  Scenario Outline: test
+  Given a step
   Examples: An example
-  with some 
-  multi line 
-  description here 
+  with some
+  multi line
+  description here
 
-  | one | two | 
+  | one | two |
 
-  | 123 | 456 | 
- 
+  | 123 | 456 |
+
   )*";
-
-  cuke::internal::lexer lex(script);
-  lex.advance();  // TODO delete me
-
-  auto example = cuke::internal::parse_example(lex, {});
-  ASSERT_FALSE(lex.error());
+  cuke::internal::parser p;
+  p.parse_script(script);
+  ASSERT_FALSE(p.error());
+  const auto& outline = static_cast<const cuke::ast::scenario_outline_node&>(
+      *p.head().feature().scenarios().at(0));
+  const auto& example = outline.examples().at(0);
   ASSERT_EQ(example.table().cells_count(), 4);
   ASSERT_EQ(example.table().col_count(), 2);
   ASSERT_EQ(example.table().row_count(), 2);
